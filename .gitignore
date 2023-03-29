@@ -1,0 +1,5 @@
+.venv/
+pexels.env
+*.flake8
+src/__pycache__/
+src/ui/__pycache__/

@@ -1,0 +1,4 @@
+supervisely==6.70.14
+
+# code formatter
+black

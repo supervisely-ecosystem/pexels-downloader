@@ -1,0 +1,20 @@
+{
+  "name": "Pexels downloader",
+  "type": "app",
+  "version": "2.0.0",
+  "release": { "version": "v0.0.1", "name": "init" },
+  "slug": "iwatkot/pexels_downloader",
+  "categories": ["import", "images"],
+  "description": "Downloads images from the Pexels to the dataset.",
+  "docker_image": "supervisely/base-py-sdk:6.70.14",
+  "entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
+  "port": 8000,
+  "task_location": "workspace_tasks",
+  "icon": "",
+  "headless": false,
+  "icon_background": "#FFFFFF",
+  "context_menu": {
+    "target": ["files_file", "ecosystem"]
+  },
+  "poster": ""
+}
