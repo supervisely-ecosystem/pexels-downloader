@@ -26,7 +26,8 @@ IMAGES_PER_PAGE = 80
 IMAGE_SIZES = ["original", "large", "medium", "small", "tiny"]
 
 REQUIRED_METADATA_FIELDS = {
-    "Pexels image URL": "url",
+    "Source URL": "url",
+    "License": "license",
     "Photographer name": "photographer",
 }
 OPTIONAL_METADATA_FIELDS = {

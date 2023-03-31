@@ -187,7 +187,6 @@ def images_from_pexels(
 
         # Iterate over the list of images on the current page.
         for image in images_on_page:
-
             # Extract the link to the original image.
             link = image.get("src").get(image_size)
 
@@ -390,7 +389,11 @@ def get_image_metadata(image: Dict[str, str], metadata: List[str]) -> Dict[str, 
         Dict[str, str]: dictionary with the specified metadata fields for the
         image to use with upload_links() or upload_paths() functions.
     """
-    image_metadata = {}
+    try:
+        metadata.remove("License")
+    except ValueError:
+        pass
+    image_metadata = {"License": "Pexels license"}
 
     for key in metadata:
         try:
