@@ -10,11 +10,11 @@
   "entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
   "port": 8000,
   "task_location": "workspace_tasks",
-  "icon": "",
+  "icon": "https://user-images.githubusercontent.com/119248312/229236930-b60ab624-a09c-4fd9-ba3c-ca1421d55b97.jpg",
   "headless": false,
   "icon_background": "#FFFFFF",
   "context_menu": {
     "target": ["files_file", "ecosystem"]
   },
-  "poster": ""
+  "poster": "https://user-images.githubusercontent.com/119248312/229236929-4b12f369-f838-41a2-9c55-d336b164526e.jpg"
 }
