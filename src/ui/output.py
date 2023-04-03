@@ -168,8 +168,15 @@ def images_from_pexels(
         sly.logger.debug(
             f"Pexels API returned {len(images_on_page)} images on page {page_number}. "
         )
+        if page_number == start_page_number == end_page_number:
+            sly.logger.debug(
+                f"Page number {page_number} is equal to start page number {start_page_number} "
+                f"and end page number {end_page_number}. Slicing the result list of images "
+                f"with {start_offset_number} and {end_offset_number} offsets."
+            )
+            images_on_page = images_on_page[start_offset_number:end_offset_number]
 
-        if page_number == start_page_number:
+        elif page_number == start_page_number:
             # Slice the list of images on the first page according to the start offset.
             sly.logger.debug(
                 f"Page number {page_number} is equal to start page number {start_page_number}. Slicing the result "
@@ -177,7 +184,7 @@ def images_from_pexels(
             )
             images_on_page = images_on_page[start_offset_number:]
 
-        if page_number == end_page_number:
+        elif page_number == end_page_number:
             # Slice the list of images on the last page according to the end offset.
             sly.logger.debug(
                 f"Page number {page_number} is equal to end page number {end_page_number}. Slicing the result "

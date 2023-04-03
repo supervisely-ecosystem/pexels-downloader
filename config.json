@@ -2,7 +2,7 @@
   "name": "Pexels downloader",
   "type": "app",
   "version": "2.0.0",
-  "release": { "version": "v0.0.1", "name": "init" },
+  "release": { "version": "v0.0.3", "name": "init" },
   "slug": "iwatkot/pexels_downloader",
   "categories": ["import", "images"],
   "description": "Downloads images from the Pexels to the dataset.",

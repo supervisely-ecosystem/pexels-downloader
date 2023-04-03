@@ -23,7 +23,7 @@ PEXELS_API_URL = "https://api.pexels.com/v1/search"
 # Settings for images search and metadata fields.
 IMAGES_PER_PAGE = 80
 
-IMAGE_SIZES = ["original", "large", "medium", "small", "tiny"]
+IMAGE_SIZES = ["original", "large2x", "large", "medium", "small", "tiny"]
 
 REQUIRED_METADATA_FIELDS = {
     "Source URL": "url",
