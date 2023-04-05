@@ -318,6 +318,14 @@ def download_images(
             # Writing the image to the local temporary directory.
             with open(local_link, "wb") as fo:
                 fo.write(response.content)
+
+            filesize = os.path.getsize(local_link)
+            if filesize < g.MIN_FILE_SIZE:
+                sly.logger.warning(
+                    f"Image {name} is too small ({filesize} bytes) and might be corrupted. Skipping..."
+                )
+                raise Exception("Image is too small, probably corrupted.")
+
             # Adding data to the local lists if the image was downloaded successfully.
             local_names.append(name)
             local_links.append(local_link)
