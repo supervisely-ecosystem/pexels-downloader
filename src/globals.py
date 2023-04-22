@@ -20,7 +20,7 @@ CUSTOM_DATA_KEY = "Pexels downloader"
 
 PEXELS_API_URL = "https://api.pexels.com/v1/search"
 
-MIN_FILE_SIZE = 10 * 1024  # 10 KB
+MIN_FILE_SIZE = 1 * 1024  # 1 KB
 
 # Settings for images search and metadata fields.
 IMAGES_PER_PAGE = 80
