@@ -1,4 +1,1 @@
-supervisely==6.70.14
-
-# code formatter
-black
+git+https://github.com/supervisely/supervisely.git@compability-fix
