@@ -114,6 +114,7 @@ def images_from_pexels(
         existing_names = [image.name for image in g.api.image.get_list(dataset_id)]
         sly.logger.debug(f"Read {len(existing_names)} existing names from the dataset.")
         sly.logger.debug(f"Examples: {existing_names[:5]}")
+        existing_names_without_ext = [name.split(".")[0] for name in existing_names]
 
     # Initialize global variables for result messages.
     global bad_links, bad_extensions, duplicates
@@ -226,8 +227,12 @@ def images_from_pexels(
                 duplicates += 1
                 continue
 
+            name_without_ext = name.split(".")[0]
+
             # Check if the image already exists in the dataset if adding images to an existing dataset.
-            if dataset_id and name in existing_names:
+            if dataset_id and (
+                name in existing_names or name_without_ext in existing_names_without_ext
+            ):
                 existed_duplicates += 1
                 sly.logger.debug(
                     f"Image with name {name} is skipped because it already exists in the dataset."
