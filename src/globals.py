@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv("local.env")
 load_dotenv(os.path.expanduser("~/supervisely.env"))
 
-api: sly.Api = sly.Api.from_env()
+api = sly.Api.from_env()
 
 TEAM_ID = sly.io.env.team_id()
 WORKSPACE_ID = sly.io.env.workspace_id()
