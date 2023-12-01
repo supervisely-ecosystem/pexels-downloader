@@ -144,7 +144,7 @@ def images_from_pexels(
         response = requests.get(url, headers=headers, params=params)
 
         if response.status_code != 200:
-            sly.logger.error(
+            sly.logger.warn(
                 "Pexels API did not answered correctly. Skipping the page."
             )
 
