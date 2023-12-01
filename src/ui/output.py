@@ -125,7 +125,7 @@ def images_from_pexels(
     names = []
     links = []
     metas = []
-
+    has_errors = False
     for page_number in range(start_page_number, end_page_number + 1):
         sly.logger.debug(
             f"Trying to get {g.IMAGES_PER_PAGE} images from page {page_number}. "
@@ -147,13 +147,7 @@ def images_from_pexels(
             sly.logger.warn(
                 "Pexels API did not answered correctly. Skipping the page."
             )
-
-            sly.app.show_dialog(
-                "Pexels API not respoding",
-                "There was an error, while calling Pexels API. Total number of images can "
-                "be less than specified or it may be no images at all. Please, try again later.",
-                status="error",
-            )
+            has_errors = True
             continue
 
         response_data = response.json()
@@ -243,6 +237,13 @@ def images_from_pexels(
             links.append(link)
             metas.append(get_image_metadata(image, metadata))
 
+    if has_errors:
+        sly.app.show_dialog(
+            "Pexels API not respoding",
+            "There was an error, while calling Pexels API. Total number of images can "
+            "be less than specified or it may be no images at all. Please, check data and try again later.",
+            status="warning",
+        )
     results_number = (
         len(names) + bad_links + bad_extensions + duplicates + existed_duplicates
     )
