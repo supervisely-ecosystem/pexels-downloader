@@ -1,4 +1,5 @@
 import os
+import supervisely as sly
 from supervisely.app.widgets import (
     Checkbox,
     Container,
