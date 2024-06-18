@@ -1,4 +1,5 @@
 import os
+import supervisely as sly
 from supervisely.app.widgets import (
     Checkbox,
     Container,
@@ -48,6 +49,9 @@ upload_method_field = Field(
     description="Add only links is faster, but it may cause data loss if the source file will be deleted.",
     content=upload_method_radio,
 )
+
+if sly.is_community():
+    upload_method_field.hide()
 
 # Info text about blocked checkboxes.
 owner_info_note = Text(
