@@ -429,6 +429,7 @@ def get_image_metadata(image: Dict[str, str], metadata: List[str]) -> Dict[str, 
 
 @download_button.click
 def pexels_to_supervisely():
+    download_button.disable()
     """Reads the data from the input fields and starts downloading images from Pexels."""
     # Hiding all info messages after the download button was pressed.
     input.query_message.hide()
@@ -578,6 +579,7 @@ def pexels_to_supervisely():
     rmtree(g.SLY_APP_DATA_DIR, ignore_errors=True)
 
     show_result_message(uploaded_images_number)
+    download_button.enable()
 
 
 def show_result_message(uploaded_images_number: Optional[int] = 0, error: bool = False):
