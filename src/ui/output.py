@@ -36,14 +36,16 @@ progress.hide()
 # Message for showing upload results.
 result_message = Text()
 result_message.hide()
-# Message for showing number of outfiltered images.
+# Message for showing number of outfiltered files.
 filtered_message = Text(status="info")
 filtered_message.hide()
-# Message for showing number of duplicate images in dataset that were skipped.
+# Message for showing number of duplicate files in dataset that were skipped.
 duplicates_message = Text(status="warning")
 duplicates_message.hide()
 
-destination = DestinationProject(g.WORKSPACE_ID, project_type="images")
+destination_images = DestinationProject(g.WORKSPACE_ID, project_type="images")
+destination_videos = DestinationProject(g.WORKSPACE_ID, project_type="videos")
+destination_videos.hide()
 
 dataset_thumbnail = DatasetThumbnail(show_project_name=True)
 dataset_thumbnail.hide()
@@ -51,10 +53,11 @@ dataset_thumbnail.hide()
 # Main card for all output widgets.
 card = Card(
     "4️⃣ Destination",
-    "Select the destination for downloading images. If not filled the names will be generated automatically. ",
+    "Select the destination for downloading files. If not filled the names will be generated automatically. ",
     content=Container(
         widgets=[
-            destination,
+            destination_images,
+            destination_videos,
             progress,
             buttons,
             result_message,
@@ -76,18 +79,18 @@ def images_from_pexels(
     start_number: int,
     image_size: str,
 ) -> Tuple[List[str], List[str], List[Dict[str, str]]]:
-    """Searches for specified number of images on Pexels using the specified search query
-    and returns the list of image names, links and metadata with specified fields.
+    """Searches for specified number of files on Pexels using the specified search query
+    and returns the list of files names, links and metadata with specified fields.
 
     Args:
-        search_query (str): search query for images
-        images_number (int): number of images to search
-        metadata (List[str]): list of metadata fields to add for images
-        start_number (int): number of images to skip from the beginning of the search
-        image_size (str): size of images to download
+        search_query (str): search query for files
+        images_number (int): number of files to search
+        metadata (List[str]): list of metadata fields to add for files
+        start_number (int): number of files to skip from the beginning of the search
+        image_size (str): size of files to download
 
     Returns:
-        tuple[List[str], List[str], List[Dict[str, str]]]: returns the list of image names,
+        tuple[List[str], List[str], List[Dict[str, str]]]: returns the list of files names,
         links and metadata for using in the upload_links() function
     """
     # Calculate the number of start and end pages and it's offsets.
@@ -102,11 +105,11 @@ def images_from_pexels(
     ) % g.IMAGES_PER_PAGE
 
     sly.logger.debug(
-        f"Total images number (with offset): {total_images_number}. "
+        f"Total files number (with offset): {total_images_number}. "
         f"Start page: {start_page_number}, start offset: {start_offset_number}. "
         f"End page: {end_page_number}, end offset: {end_offset_number}."
     )
-    # Check if adding images to an existing dataset.
+    # Check if adding files to an existing dataset.
     global dataset_id
     if dataset_id:
         # Read the list of existing file names to check for duplicates in search results.
@@ -132,7 +135,7 @@ def images_from_pexels(
             f"Search query: {search_query}."
         )
 
-        url = g.PEXELS_API_URL
+        url = g.get_pexels_api_url()
         headers = {"Authorization": keys.pexels_api_key}
 
         params = {
@@ -144,9 +147,7 @@ def images_from_pexels(
         response = requests.get(url, headers=headers, params=params)
 
         if response.status_code != 200:
-            sly.logger.warn(
-                "Pexels API did not answered correctly. Skipping the page."
-            )
+            sly.logger.warn("Pexels API did not answered correctly. Skipping the page.")
             has_errors = True
             continue
 
@@ -158,7 +159,7 @@ def images_from_pexels(
             f"Total results: {response_data.get('total_results')}."
         )
 
-        images_on_page = response_data["photos"]
+        images_on_page = response_data.get(g.get_response_key(), [])
 
         sly.logger.debug(
             f"Pexels API returned {len(images_on_page)} images on page {page_number}. "
@@ -187,10 +188,15 @@ def images_from_pexels(
             )
             images_on_page = images_on_page[:end_offset_number]
 
+        size_idx = g.get_video_size_idx(image_size)
+
         # Iterate over the list of images on the current page.
         for image in images_on_page:
             # Extract the link to the original image.
-            link = image.get("src").get(image_size)
+            if g.app_mode == "images":
+                link = image.get("src").get(image_size)
+            elif g.app_mode == "videos":
+                link = g.get_video_link(image.get("video_files"), size_idx)
 
             # Checking if the link is correct.
             if not link:
@@ -208,7 +214,13 @@ def images_from_pexels(
             # Using Pexels photo ID as the image name.
             name = f"pexels_{image.get('id')}" + extension
 
-            if extension not in g.ALLOWED_IMAGE_FORMATS:
+            allowed_formats = (
+                g.ALLOWED_IMAGE_FORMATS
+                if g.app_mode == "images"
+                else g.ALLOWED_VIDEO_FORMATS
+            )
+
+            if extension not in allowed_formats:
                 sly.logger.debug(
                     f"The image with link {link} is skipped due to wrong extension."
                 )
@@ -240,8 +252,8 @@ def images_from_pexels(
     if has_errors:
         sly.app.show_dialog(
             "Pexels API not respoding",
-            "There was an error, while calling Pexels API. Total number of images can "
-            "be less than specified or it may be no images at all. Please, check data and try again later.",
+            "There was an error, while calling Pexels API. Total number of files can "
+            "be less than specified or it may be no files at all. Please, check data and try again later.",
             status="warning",
         )
     results_number = (
@@ -383,12 +395,12 @@ def upload_images_to_dataset(
     # Check if the user hasn't pressed the cancel button.
     if continue_downloading:
         if upload_method == "links":
-            uploaded_images = g.api.image.upload_links(
+            uploaded_images = get_entity_api().upload_links(
                 dataset_id, batch_names, batch_links, metas=batch_metas
             )
 
         elif upload_method == "files":
-            uploaded_images = g.api.image.upload_paths(
+            uploaded_images = get_entity_api().upload_paths(
                 dataset_id, batch_names, batch_links, metas=batch_metas
             )
 
@@ -397,6 +409,13 @@ def upload_images_to_dataset(
         )
 
         return len(uploaded_images)
+
+
+def get_entity_api():
+    if g.app_mode == "images":
+        return g.api.image
+    elif g.app_mode == "videos":
+        return g.api.video
 
 
 def get_image_metadata(image: Dict[str, str], metadata: List[str]) -> Dict[str, str]:
@@ -424,13 +443,16 @@ def get_image_metadata(image: Dict[str, str], metadata: List[str]) -> Dict[str, 
 
         image_metadata[key] = image.get(field_name)
 
+    # Return key-value pairs if the value is None.
+    image_metadata = {k: v for k, v in image_metadata.items() if v is not None}
+
     return image_metadata
 
 
 @download_button.click
 def pexels_to_supervisely():
     download_button.disable()
-    """Reads the data from the input fields and starts downloading images from Pexels."""
+    """Reads the data from the input fields and starts downloading files from Pexels."""
     # Hiding all info messages after the download button was pressed.
     input.query_message.hide()
     result_message.hide()
@@ -440,6 +462,7 @@ def pexels_to_supervisely():
 
     global batch_size
     batch_size = settings.batch_size_input.get_value()
+
     global max_workers
     max_workers = settings.max_workers_input.get_value()
 
@@ -458,9 +481,9 @@ def pexels_to_supervisely():
     # Read the project and dataset ids from the destination input.
     # Define the global variables to use them in show_result_message().
     global project_id
-    project_id = destination.get_selected_project_id()
+    project_id = get_project_widget().get_selected_project_id()
     global dataset_id
-    dataset_id = destination.get_selected_dataset_id()
+    dataset_id = get_project_widget().get_selected_dataset_id()
 
     # Define the global variable to check if the download should continue.
     global continue_downloading
@@ -510,16 +533,14 @@ def pexels_to_supervisely():
 
     # Create the project and dataset if they don't exist.
     if not project_id:
-        project_id = create_project(destination.get_project_name())
+        project_id = create_project(get_project_widget().get_project_name())
     if not dataset_id:
-        dataset_id = create_dataset(project_id, destination.get_dataset_name())
+        dataset_id = create_dataset(project_id, get_project_widget().get_dataset_name())
 
     progress.show()
     uploaded_images_number = 0
 
-    with progress(
-        message="Uploading images to the dataset...", total=len(names)
-    ) as pbar:
+    with progress(message="Uploading data to the dataset...", total=len(names)) as pbar:
         # Batch the lists of names, links and metadata.
         for batch_names, batch_links, batch_metas in zip(
             sly.batched(names, batch_size=batch_size),
@@ -600,30 +621,28 @@ def show_result_message(uploaded_images_number: Optional[int] = 0, error: bool =
         result_message.status = "error"
     elif continue_downloading:
         # If the upload was not cancelled, prepare the success message.
-        result_message.text = f"Successfully uploaded {uploaded_images_number} images."
+        result_message.text = f"Successfully uploaded {uploaded_images_number} files."
         result_message.status = "success"
         dataset_thumbnail.show()
     elif uploaded_images_number:
         # If the upload was cancelled, prepare the warning message.
         result_message.text = (
-            f"Download was cancelled after uploading {uploaded_images_number} images."
+            f"Download was cancelled after uploading {uploaded_images_number} files."
         )
         result_message.status = "warning"
         dataset_thumbnail.show()
     else:
         # If the upload was cancelled and no images were uploaded, prepare the error message.
-        result_message.text = "Download was cancelled. No images were uploaded."
+        result_message.text = "Download was cancelled. No files were uploaded."
         result_message.status = "error"
     if filtered_images:
         # Show the message with the number of filtered images if there were any.
-        filtered_message.text = (
-            f"Images filtered out as bad results: {filtered_images}."
-        )
+        filtered_message.text = f"Files filtered out as bad results: {filtered_images}."
         filtered_message.show()
     if existed_duplicates:
         # Show the message with the number of existed duplicates in the dataset if there were any.
         duplicates_message.text = (
-            f"Images filtered out as duplicates in the dataset: {existed_duplicates}."
+            f"Files filtered out as duplicates in the dataset: {existed_duplicates}."
         )
         duplicates_message.show()
 
@@ -654,10 +673,10 @@ def create_project(project_name: Optional[str]) -> int:
     # If the name is not specified, use the search query as the name.
     if not project_name:
         sly.logger.debug("Project name is not specified, using search query.")
-        project_name = f"Pexels images: {search_query}"
+        project_name = f"Pexels: {search_query}"
 
     project = g.api.project.create(
-        g.WORKSPACE_ID, project_name, change_name_if_conflict=True
+        g.WORKSPACE_ID, project_name, change_name_if_conflict=True, type=g.app_mode
     )
     return project.id
 
@@ -693,3 +712,10 @@ def cancel_downloading():
     continue_downloading = False
     download_button.text = "Stopping..."
     cancel_button.hide()
+
+
+def get_project_widget() -> DestinationProject:
+    if g.app_mode == "images":
+        return destination_images
+    elif g.app_mode == "videos":
+        return destination_videos

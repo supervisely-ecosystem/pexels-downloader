@@ -9,9 +9,10 @@
     "slug": "iwatkot/pexels_downloader",
     "categories": [
         "import",
-        "images"
+        "images",
+        "videos"
     ],
-    "description": "Downloads images from the Pexels to the dataset.",
+    "description": "Downloads images and videos from Pexels.",
     "docker_image": "supervisely/import-export:6.73.204",
     "instance_version": "6.11.19",
     "entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
@@ -27,5 +28,5 @@
             "ecosystem"
         ]
     },
-    "poster": "https://user-images.githubusercontent.com/119248312/229236929-4b12f369-f838-41a2-9c55-d336b164526e.jpg"
+    "poster": "https://github.com/kirasolda/pexels-downloader/releases/download/0.0.1/229236929-4b12f369-f838-41a2-9c55-d336b164526e.png"
 }

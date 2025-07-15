@@ -21,16 +21,16 @@ image_size_select = Select(items=image_sizes)
 
 # Field for choosing image size.
 image_size_field = Field(
-    title="Image size",
-    description="Choose the size of the image to download.",
+    title="Media files size",
+    description="Choose the size of the files to download.",
     content=image_size_select,
 )
 
 # Field for choosing starting number for searching images.
 start_number_input = InputNumber(value=0, min=0, precision=0)
 start_number_field = Field(
-    title="Starting image number to search",
-    description="Offset for searching images (from which search result number to start).",
+    title="Starting files number to search",
+    description="Offset for searching files (from which search result number to start).",
     content=start_number_input,
 )
 
@@ -56,7 +56,7 @@ if sly.is_community():
 # Info text about blocked checkboxes.
 owner_info_note = Text(
     status="info",
-    text="Information about the owner of the image will be added to the "
+    text="Information about the owner of the files will be added to the "
     "metadata because it is a requirement of the license.",
 )
 
@@ -78,10 +78,10 @@ for checkbox in checkboxes.values():
     checkbox.check()
 checkboxes_container = Container(widgets=checkboxes.values(), direction="vertical")
 
-# Field for choosing image metadata fields to add.
+# Field for choosing files metadata fields to add.
 metadata_field = Field(
-    title="Image metadata fields",
-    description="Select metadata fields to add for downloaded images.",
+    title="Files metadata fields",
+    description="Select metadata fields to add for downloaded files.",
     content=Container(
         widgets=[owner_info_note, disabled_chekboxes_container, checkboxes_container],
         direction="vertical",
@@ -91,13 +91,13 @@ metadata_field = Field(
 # Field for choosing number of images to find.
 images_number_input = InputNumber(value=1, min=1, precision=0)
 images_number_field = Field(
-    title="Number of images",
-    description="How many images to find on Pexels.",
+    title="Number of files",
+    description="How many files to find on Pexels.",
     content=images_number_input,
 )
 
 # Inputs for changing default settings.
-batch_size_input = InputNumber(value=500, min=1, precision=0)
+batch_size_input = InputNumber(value=g.IMAGE_BATCH_SIZE, min=1, precision=0)
 max_workers_input = InputNumber(value=os.cpu_count(), min=1, precision=0)
 batch_size_input.disable()
 max_workers_input.disable()
@@ -106,10 +106,8 @@ max_workers_input.disable()
 default_settings_checkbox = Checkbox(content="Use default settings", checked=True)
 
 # Text tooltips for default settings inputs.
-batch_size_text = Text("Batch size for uploading images:")
-max_workers_text = Text(
-    "Maximum number of workers for uploading image files in parallel:"
-)
+batch_size_text = Text("Batch size for uploading files:")
+max_workers_text = Text("Maximum number of workers for uploading files in parallel:")
 
 # Field for choosing upload settings.
 upload_settings_field = Field(
@@ -141,7 +139,7 @@ card = Card(
         direction="vertical",
     ),
     title="3️⃣ Search settings",
-    description="Additional settings for searching and downloading images.",
+    description="Additional settings for searching and downloading media files.",
     lock_message="Please, enter API key and check the connection to the Pexels API.",
 )
 card.lock()

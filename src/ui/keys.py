@@ -49,7 +49,7 @@ def connect_to_api():
     params = {"query": "test"}
 
     # Making a request to the Pexels API.
-    response = requests.get(g.PEXELS_API_URL, headers=headers, params=params)
+    response = requests.get(g.get_pexels_api_url(), headers=headers, params=params)
 
     if response.status_code == 200:
         # Checking the connection to the Pexels API with specified API key.
