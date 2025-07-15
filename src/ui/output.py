@@ -396,12 +396,18 @@ def upload_images_to_dataset(
     if continue_downloading:
         if upload_method == "links":
             uploaded_images = get_entity_api().upload_links(
-                dataset_id, batch_names, batch_links, metas=batch_metas
+                dataset_id=dataset_id,
+                names=batch_names,
+                links=batch_links,
+                metas=batch_metas,
             )
 
         elif upload_method == "files":
             uploaded_images = get_entity_api().upload_paths(
-                dataset_id, batch_names, batch_links, metas=batch_metas
+                dataset_id=dataset_id,
+                names=batch_names,
+                paths=batch_links,
+                metas=batch_metas,
             )
 
         sly.logger.debug(

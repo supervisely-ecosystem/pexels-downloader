@@ -100,15 +100,15 @@ def get_number_of_results():
         number_of_results = response.json().get("total_results")
 
         sly.logger.info(
-            f"Pexels API returned {number_of_results} images for the search query: {search_query}."
+            f"Pexels API returned {number_of_results} results for the search query: {search_query}."
         )
         if number_of_results == 8000:
             search_results.text = (
-                "At least 8000 images were found. Pexels API "
+                "At least 8000 results were found. Pexels API "
                 "limits the number of search results to 8000, but it may be more."
             )
         else:
-            search_results.text = f"Number of images found: {number_of_results}."
+            search_results.text = f"Number of results found: {number_of_results}."
         search_results.show()
 
     if not search_query:
