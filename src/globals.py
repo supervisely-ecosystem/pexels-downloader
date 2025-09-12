@@ -72,11 +72,8 @@ def get_video_link(
     sorted_files = sorted(video_files, key=lambda x: x["width"], reverse=True)
     if not sorted_files:
         return None
-    if image_idx >= len(sorted_files):
-        video_file = sorted_files[-1]  # минимальная ширина
-    else:
-        video_file = sorted_files[image_idx]
-    return video_file.get("link")
+    image_idx = min(image_idx, len(sorted_files) - 1)
+    return sorted_files[image_idx].get("link")
 
 
 def get_video_size_idx(image_size: str) -> int:
