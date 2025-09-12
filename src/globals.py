@@ -70,8 +70,10 @@ def get_video_link(
         str: URL of the video file with the specified index.
     """
     sorted_files = sorted(video_files, key=lambda x: x["width"], reverse=True)
-    video_file = sorted_files[image_idx]
-    return video_file.get("link")
+    if not sorted_files:
+        return None
+    image_idx = min(image_idx, len(sorted_files) - 1)
+    return sorted_files[image_idx].get("link")
 
 
 def get_video_size_idx(image_size: str) -> int:
