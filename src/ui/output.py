@@ -129,21 +129,20 @@ def images_from_pexels(
     links = []
     metas = []
     has_errors = False
+    url = g.get_pexels_api_url()
+    headers = {"Authorization": keys.pexels_api_key}
+    params = {
+            "query": search_query,
+            "per_page": g.IMAGES_PER_PAGE,
+            "page": start_page_number,
+        }
     for page_number in range(start_page_number, end_page_number + 1):
         sly.logger.debug(
             f"Trying to get {g.IMAGES_PER_PAGE} images from page {page_number}. "
             f"Search query: {search_query}."
         )
-
-        url = g.get_pexels_api_url()
-        headers = {"Authorization": keys.pexels_api_key}
-
-        params = {
-            "query": search_query,
-            "per_page": g.IMAGES_PER_PAGE,
-            "page": page_number,
-        }
-
+        params["page"] = page_number
+        
         response = requests.get(url, headers=headers, params=params)
 
         if response.status_code != 200:
@@ -222,7 +221,7 @@ def images_from_pexels(
 
             if extension not in allowed_formats:
                 sly.logger.debug(
-                    f"The image with link {link} is skipped due to wrong extension."
+                    f"The image with link {link} is skipped due to wrong extension {extension}."
                 )
                 bad_extensions += 1
                 continue
@@ -264,7 +263,7 @@ def images_from_pexels(
 
     sly.logger.info(
         f"Pexels API returned {results_number} images for "
-        f"search query with {images_number} images number."
+        f"search query with {images_number} requested images."
     )
 
     sly.logger.info(

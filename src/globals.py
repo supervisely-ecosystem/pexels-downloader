@@ -95,7 +95,7 @@ def get_video_size_idx(image_size: str) -> int:
 MIN_FILE_SIZE = 1 * 1024  # 1 KB
 
 # Settings for images search and metadata fields.
-IMAGES_PER_PAGE = 80
+IMAGES_PER_PAGE = 76
 
 IMAGE_SIZES = ["original", "large2x", "large", "medium", "small", "tiny"]
 

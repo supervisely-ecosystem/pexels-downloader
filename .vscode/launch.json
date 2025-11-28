@@ -3,7 +3,7 @@
     "configurations": [
         {
             "name": "Pexels image downloader",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
             "args": [
