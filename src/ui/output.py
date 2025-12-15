@@ -616,6 +616,7 @@ def show_result_message(uploaded_images_number: Optional[int] = 0, error: bool =
         uploaded_images_number (Optional[int]): the number of uploaded images
         error (bool): if there was an error during the download
     """
+    dataset = None
     if project_id and dataset_id:
         project = g.api.project.get_info_by_id(project_id)
         dataset = g.api.dataset.get_info_by_id(id=dataset_id)

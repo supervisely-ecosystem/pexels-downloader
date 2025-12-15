@@ -87,6 +87,17 @@ def get_number_of_results():
 
         # Making a request to the Pexels API.
         response = requests.get(g.get_pexels_api_url(), headers=headers, params=params)
+        
+        # Check if the response was successful
+        if response.status_code != 200:
+            sly.logger.error(
+                f"Pexels API returned status code {response.status_code}. "
+                f"Response: {response.text}"
+            )
+            search_results.text = f"Error: API request failed with status {response.status_code}."
+            search_results.show()
+            return
+        
         try:
             # Getting the number of requests left fot the API key.
             rate_remaining = int(response.headers["X-Ratelimit-Remaining"])
@@ -94,7 +105,10 @@ def get_number_of_results():
                 f"Pexels API announced that {rate_remaining} requests left."
             )
         except KeyError:
-            sly.logger.error(f"Headers not found in the response: {response.headers}.")
+            sly.logger.warning(
+                f"Rate limit header not found in the response. "
+                f"This may happen with certain API endpoints or error responses."
+            )
 
         # Getting the number of images found by the search query.
         number_of_results = response.json().get("total_results")
