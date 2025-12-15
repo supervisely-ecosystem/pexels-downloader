@@ -94,28 +94,26 @@ def get_number_of_results():
                 f"Pexels API returned status code {response.status_code}. "
                 f"Response: {response.text}"
             )
-            search_results.text = f"Error: API request failed with status {response.status_code}."
-            search_results.show()
-            return
-        
-        try:
-            # Getting the number of requests left fot the API key.
-            rate_remaining = int(response.headers["X-Ratelimit-Remaining"])
+            number_of_results = 0
+        else:
+            try:
+                # Getting the number of requests left fot the API key.
+                rate_remaining = int(response.headers["X-Ratelimit-Remaining"])
+                sly.logger.info(
+                    f"Pexels API announced that {rate_remaining} requests left."
+                )
+            except KeyError:
+                sly.logger.warning(
+                    f"Rate limit header not found in the response. "
+                    f"This may happen with certain API endpoints or error responses."
+                )
+
+            # Getting the number of images found by the search query.
+            number_of_results = response.json().get("total_results", 0)
+
             sly.logger.info(
-                f"Pexels API announced that {rate_remaining} requests left."
+                f"Pexels API returned {number_of_results} results for the search query: {search_query}."
             )
-        except KeyError:
-            sly.logger.warning(
-                f"Rate limit header not found in the response. "
-                f"This may happen with certain API endpoints or error responses."
-            )
-
-        # Getting the number of images found by the search query.
-        number_of_results = response.json().get("total_results")
-
-        sly.logger.info(
-            f"Pexels API returned {number_of_results} results for the search query: {search_query}."
-        )
         if number_of_results == 8000:
             search_results.text = (
                 "At least 8000 results were found. Pexels API "
