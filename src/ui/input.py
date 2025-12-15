@@ -97,7 +97,7 @@ def get_number_of_results():
             sly.logger.error(f"Headers not found in the response: {response.headers}.")
 
         # Getting the number of images found by the search query.
-        number_of_results = response.json().get("total_results")
+        number_of_results = response.json().get("total_results", 0)
 
         sly.logger.info(
             f"Pexels API returned {number_of_results} results for the search query: {search_query}."
