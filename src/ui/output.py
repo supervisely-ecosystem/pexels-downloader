@@ -652,7 +652,7 @@ def show_result_message(uploaded_images_number: Optional[int] = 0, error: bool =
         duplicates_message.show()
 
     sly.logger.info(
-        f"Task finished. Uploaded {uploaded_images_number} images to the dataset {dataset.name}."
+        f"Task finished. Uploaded {uploaded_images_number} images to the dataset."
     )
     sly.logger.info(f"Search query: {search_query}, images number: {images_number}.")
     sly.logger.info(
